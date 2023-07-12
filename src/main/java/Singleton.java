@@ -1,5 +1,5 @@
 public class Singleton {
-    private static Singleton INSTANCE;
+    private volatile static Singleton INSTANCE;
 
     private Singleton() {
     }
