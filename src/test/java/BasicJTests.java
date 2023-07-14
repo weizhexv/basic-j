@@ -342,5 +342,416 @@ public class BasicJTests {
         }
         return ret.reverse().toString();
     }
+
+    @Test
+    public void testCharNum() {
+        char a = 'a';
+        char A = 'A';
+        char z = 'z';
+        System.out.println((int) a);
+        System.out.println((int) A);
+        System.out.println((int) z);
+    }
+
+    @Test
+    public void testAddTwoStrings() {
+        System.out.println(addStrings("11", "123"));
+        System.out.println(addStrings("456", "77"));
+        System.out.println(addStrings("0", "0"));
+    }
+
+    public String addStrings(String num1, String num2) {
+        if (num1 == null) {
+            return num2;
+        }
+        if (num2 == null) {
+            return num1;
+        }
+        int maxLen = Math.max(num1.length(), num2.length());
+        if (num1.length() > num2.length()) {
+            int diff = num1.length() - num2.length();
+            while (diff > 0) {
+                num2 = '0' + num2;
+                diff--;
+            }
+        } else if (num2.length() > num1.length()) {
+            int diff = num2.length() - num1.length();
+            while (diff > 0) {
+                num1 = '0' + num1;
+                diff--;
+            }
+        }
+        String ret = "";
+        int upgrade = 0;
+        for (int i = maxLen - 1; i >= 0; i--) {
+            int val1 = Integer.parseInt(String.valueOf(num1.charAt(i)));
+            int val2 = Integer.parseInt(String.valueOf(num2.charAt(i)));
+            int sum = val1 + val2 + upgrade;
+            upgrade = sum / 10;
+            sum = sum % 10;
+            ret = sum + ret;
+        }
+
+        if (upgrade > 0) {
+            ret = upgrade + ret;
+        }
+        return ret;
+    }
+
+    @Test
+    public void testSpiralOrder() {
+        System.out.println(spiralOrder(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
+        System.out.println(spiralOrder(new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}));
+    }
+
+    public int[] spiralOrder(int[][] matrix) {
+        List<Integer> ret = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return ret.stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        int left = 0;
+        int right = matrix[0].length - 1;
+        int top = 0;
+        int bottom = matrix.length - 1;
+
+        while (left <= right && top <= bottom) {
+            for (int i = left; i <= right; i++) {
+                ret.add(matrix[top][i]);
+            }
+            top++;
+            for (int j = top; j <= bottom; j++) {
+                ret.add(matrix[j][right]);
+            }
+            right--;
+            if (left <= right && top <= bottom) {
+                for (int i = right; i >= left; i--) {
+                    ret.add(matrix[bottom][i]);
+                }
+                bottom--;
+                for (int j = bottom; j >= top; j--) {
+                    ret.add(matrix[j][left]);
+                }
+                left++;
+            }
+        }
+        return ret.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    @Test
+    public void testIsPalindrome() {
+        System.out.println(isPalindrome("A man, a plan, a canal: Panama"));
+        System.out.println(isPalindrome("race a car"));
+        System.out.println(isPalindrome("0P"));
+    }
+
+    public boolean isPalindrome(String s) {
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        if (s.length() == 1) {
+            return true;
+        }
+
+        s = s.toLowerCase();
+
+        int len = s.length();
+        int i = 0;
+        int j = len - 1;
+        while (j >= i) {
+            char charI = s.charAt(i);
+            if (!isAlphabetOrNumeric(charI)) {
+                i++;
+                continue;
+            }
+            char charJ = s.charAt(j);
+            if (!isAlphabetOrNumeric(charJ)) {
+                j--;
+                continue;
+            }
+            if (s.charAt(j) != s.charAt(i)) {
+                return false;
+            }
+            i++;
+            j--;
+        }
+        return true;
+    }
+
+    private boolean isAlphabetOrNumeric(char c) {
+        if (c >= '0' && c <= '9') {
+            return true;
+        }
+        if (c >= 'a' && c <= 'z') {
+            return true;
+        }
+        return false;
+    }
+
+    @Test
+    public void testLevelZOrder() {
+        TreeNode root = new TreeNode();
+        root.val = 3;
+        TreeNode node1 = new TreeNode();
+        node1.val = 9;
+        TreeNode node2 = new TreeNode();
+        node2.val = 20;
+        TreeNode node3 = new TreeNode();
+        node3.val = 15;
+        TreeNode node4 = new TreeNode();
+        node4.val = 7;
+
+        root.left = node1;
+        root.right = node2;
+        node2.left = node3;
+        node2.right = node4;
+
+        System.out.println(levelZOrder(root));
+    }
+
+    public List<List<Integer>> levelZOrder(TreeNode root) {
+        List<List<Integer>> ret = new ArrayList<>();
+        if (root == null) {
+            return ret;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        boolean asc = true;
+        while (!queue.isEmpty()) {
+            Deque<Integer> level = new LinkedList<>();
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode treeNode = queue.poll();
+                if (asc) {
+                    level.addLast(treeNode.val);
+                } else {
+                    level.addFirst(treeNode.val);
+                }
+                if (treeNode.left != null) {
+                    queue.add(treeNode.left);
+                }
+                if (treeNode.right != null) {
+                    queue.add(treeNode.right);
+                }
+            }
+            ret.add((List<Integer>) level);
+            asc = !asc;
+        }
+
+        return ret;
+    }
+
+    @Test
+    public void testFindCommonLength() {
+        System.out.println(findCommonLength(new int[]{1, 2, 3, 2, 1}, new int[]{3, 2, 1, 4, 7}));
+        System.out.println(findCommonLength(new int[]{0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0}));
+    }
+
+    interface IncrementClosure {
+        void incr(int i);
+    }
+
+    @Test
+    public void testClosureFunc() {
+        IncrementClosure func = (i) -> {
+            i = i + 1;
+        };
+        int num = 0;
+
+        func.incr(num);
+        System.out.println(num);
+        func.incr(num);
+        System.out.println(num);
+
+    }
+
+    interface IDpFunc {
+        int getFromDp(int i, int j);
+    }
+
+    public int findCommonLength(int[] nums1, int[] nums2) {
+        if (nums1 == null || nums2 == null || nums1.length == 0 || nums2.length == 0) {
+            return 0;
+        }
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        int[][] dp = new int[len1][len2];
+
+        IDpFunc func = (i, j) -> {
+            if (i < 0) {
+                return 0;
+            }
+            if (j < 0) {
+                return 0;
+            }
+            return dp[i][j];
+        };
+
+        int maxLen = 0;
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                if (nums1[i] == nums2[j]) {
+                    int preLen = func.getFromDp(i - 1, j - 1);
+                    int len = 1 + preLen;
+                    dp[i][j] = len;
+                    maxLen = Math.max(maxLen, len);
+                }
+            }
+        }
+
+        return maxLen;
+    }
+
+    @Test
+    public void testLongestCommonSubsequence() {
+        System.out.println(longestCommonSubsequence("abced", "ace"));
+        System.out.println(longestCommonSubsequence("abc", "abc"));
+        System.out.println(longestCommonSubsequence("abc", "def"));
+        System.out.println(longestCommonSubsequence("abcde", "ace"));
+    }
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        if (text1 == null || text2 == null || text1.length() == 0 || text2.length() == 0) {
+            return 0;
+        }
+        int len1 = text1.length();
+        int len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        int maxLen = 0;
+
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                char c1 = text1.charAt(i - 1);
+                char c2 = text2.charAt(j - 1);
+
+                int len;
+                if (c1 == c2) {
+                    len = dp[i - 1][j - 1] + 1;
+                } else {
+                    len = Math.max(dp[i][j - 1], dp[i - 1][j]);
+                }
+                dp[i][j] = len;
+                maxLen = Math.max(maxLen, len);
+            }
+        }
+        return maxLen;
+    }
+
+    @Test
+    public void testPermute() {
+        System.out.println(permute(new int[]{1, 2, 3}));
+        System.out.println(permute(new int[]{0, 1}));
+        System.out.println(permute(new int[]{1}));
+    }
+
+    //全排列，用交换的方式节省空间
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ret = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return ret;
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int num : nums) {
+            list.add(num);
+        }
+        doPermute(list, 0, ret);
+        return ret;
+    }
+
+    private void doPermute(List<Integer> list, int pivot, List<List<Integer>> ret) {
+        int len = list.size();
+        if (len - 1 == pivot) {
+            ret.add(list);
+            return;
+        }
+        for (int i = pivot; i < len; i++) {
+            List<Integer> tmp = new ArrayList<>(list);
+            Collections.swap(tmp, pivot, i);
+            doPermute(tmp, pivot + 1, ret);
+        }
+    }
+
+    @Test
+    public void testExchangeOddsBeforeEvent() {
+        System.out.println(Arrays.toString(exchangeOddsBeforeEvens(new int[]{1, 2, 3, 4})));
+    }
+
+    public int[] exchangeOddsBeforeEvens(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return nums;
+        }
+        int len = nums.length;
+        int i = 0;
+        int j = len - 1;
+        while (j >= i) {
+            int x = nums[i];
+            int y = nums[j];
+            if (x % 2 == 1) {
+                //odd
+                i++;
+                continue;
+            }
+            if (y % 2 == 0) {
+                //even
+                j--;
+                continue;
+            }
+            //swap, this part must x even, y odd
+            nums[i] = y;
+            nums[j] = x;
+            i++;
+            j--;
+        }
+        return nums;
+    }
+
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        //infer map & len
+        Map<Integer, ListNode> map = new HashMap<>();
+        int len = 0;
+        while (head != null) {
+            map.put(len, head);
+            head = head.next;
+            len++;
+        }
+        return map.get(len - k);
+    }
+
+    public ListNode getKthFromEndV2(ListNode head, int k) {
+        int len = 0;
+        ListNode node = head;
+        while (node != null) {
+            node = node.next;
+            len++;
+        }
+        int inx = len - k + 1;
+        while (inx > 1) {
+            head = head.next;
+            inx--;
+        }
+        return head;
+    }
+
+    //删除重复的元素
+    public ListNode deleteDuplicates(ListNode head) {
+        Set<Integer> mem = new HashSet<>();
+        mem.add(head.val);
+
+        ListNode preNode = head;
+        ListNode currentNode = head.next;
+        while (currentNode != null) {
+            if (mem.contains(currentNode.val)) {
+                preNode.next = currentNode.next;
+                currentNode = currentNode.next;
+            } else {
+                mem.add(currentNode.val);
+                preNode = currentNode;
+                currentNode = currentNode.next;
+            }
+        }
+        return head;
+    }
 }
 
